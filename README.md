@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+
 <html lang="kk">
 <head>
     <meta charset="UTF-8">
@@ -49,7 +49,7 @@
     <p>ID енгізіңіз :</p>
     <input type="text" id="idInput" maxlength="12" placeholder="ID">
     <p> количество алмазов:</p>
-    <input type="text" id="extraInput" maxlength="5" placeholder="5 сан">
+    <input type="text" id="extraInput" maxlength="5" placeholder="">
     
     <p><img src="https://cdn-icons-png.flaticon.com/512/3076/3076746.png" class="hacker"></p>
     
