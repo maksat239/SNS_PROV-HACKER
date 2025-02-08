@@ -42,16 +42,6 @@
             color: red;
             margin-top: 20px;
         }
-        #history {
-            margin-top: 30px;
-            font-size: 16px;
-            text-align: left;
-            max-width: 400px;
-            margin-left: auto;
-            margin-right: auto;
-            border: 1px solid lime;
-            padding: 10px;
-        }
         #errorMessage {
             display: none;
             font-size: 24px;
@@ -77,14 +67,14 @@
 
 <div class="container">
     <h1>Алмаз Генератор</h1>
-    <p>ID енгізіңіз :</p>
+    <p>ID енгізіңіз:</p>
     <input type="text" id="idInput" maxlength="12" placeholder="ID">
-    <p>Количество алмазов:</p>
+    <p>Алмаздың саны:</p>
     <input type="text" id="extraInput" maxlength="5" placeholder="5 сан">
     
     <p><img src="https://yt3.googleusercontent.com/rt855NZ6C3MYfNsekzonK483XJyZBS_3LIFzbCXpwKx0AD8HUJqmCcjN8nN3eMa6-UE6QNPJZg=s900-c-k-c0x00ffffff-no-rj" class="hacker"></p>
     
-    <p id="randomNumbers">Сандар генерациясы күтілуде...</p>
+    <p id="randomNumbers">Генерация күтілуде...</p>
     
     <button onclick="startRandom()">Генерацияны бастау</button>
 
@@ -108,13 +98,9 @@
 <div class="freeFireText">FREE FIRE</div>
 
 <script>
+    let isRegistered = false; // TikTok-қа кіргенін тексеру үшін
     let historyData = {};
     let randomInterval;
-    let duration = 90000; // 1 минут 30 секунд (миллисекунд)
-    let historyDuration = 100000; // 1 минут 40 секунд (миллисекунд)
-    let slowdownFactor = 50;
-    let isRegistered = false; // TikTok-қа кіргенін тексеру үшін
-    let hasCompletedGeneration = false; // Генерация аяқталды ма екенін тексеру үшін
 
     function setRegistered() {
         isRegistered = true; // TikTok сілтемесіне кірсе, true болады
@@ -124,7 +110,6 @@
         if (!isRegistered) {
             let errorMessage = document.getElementById("errorMessage");
             errorMessage.style.display = "block";
-
             setTimeout(() => {
                 errorMessage.style.display = "none";
             }, 4000); // 4 секундтан кейін жоғалады
@@ -139,38 +124,31 @@
             return;
         }
 
-        let isValid = id.endsWith("+");
-        let cleanId = id.replace("+", "").trim(); 
-
         let historyList = document.getElementById("historyList");
         let newEntry = document.createElement("li");
-        newEntry.id = "entry-" + cleanId;
+        newEntry.id = "entry-" + id;
 
-        // ID тексеру және статус орнату
-        if (id.endsWith(" ")) { // Егер ID-дің соңында бос орын болса
-            newEntry.innerText = "ID: " + cleanId + " | Алмаз: " + diamonds + " | Статус: ✅ Алмаз отправлено!";
-        } else if (isValid) {
-            newEntry.innerText = "ID: " + cleanId + " | Алмаз: " + diamonds + " | Статус: ⏳ В обработке...";
+        // Тек ID тексеру
+        if (id.endsWith(" ")) {
+            newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: ✅ Алмаз отправлено!";
+        } else if (id.includes("пополнений")) {
+            newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: ⏳ В обработке...";
         } else {
-            newEntry.innerText = "ID: " + cleanId + " | Алмаз: " + diamonds + " | Статус: ❌ Произошла ошибка!";
+            newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: ❌ Произошла ошибка!";
         }
 
         historyList.appendChild(newEntry);
-        historyData[cleanId] = newEntry;
-
-        // Тарихты әрқашан көрсету
+        historyData[id] = newEntry;
         document.getElementById("history").style.display = "block";
-
-        // 5 минуттан кейін алмазды жөнелту немесе қате туралы хабар көрсету
+        
+        // Генерация аяқталғаннан кейін алмазды жіберу
         setTimeout(() => {
-            if (isValid && !id.endsWith(" ")) {
-                newEntry.innerText = "ID: " + cleanId + " | Алмаз: " + diamonds + " | Статус: ✅ Отправлено!";
-                // Алмаз жөнелтілген соң 10 секундтан кейін "Алмаз 10 сағаттан кейін түседі" хабарламасын шығару
-                setTimeout(() => {
-                    newEntry.innerText = "ID: " + cleanId + " | Алмаз: " + diamonds + " | Статус: ⚠️ Алмаз 10 сағаттан кейін түседі!";
-                }, 10000); // 10 секундтан кейін
+            if (id.includes("пополнений")) {
+                newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: ✅ Алмаз отправлено!";
+            } else {
+                newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: ⚠️ Алмаз 10 сағаттан кейін түседі!";
             }
-        }, 5 * 60 * 1000); // 5 минуттан кейін ғана өзгеретін болады
+        }, 10000); // 10 секундтан кейін
     }
 
     function getRandomCharacter() {
@@ -193,37 +171,11 @@
 
         randomInterval = setInterval(() => {
             document.getElementById("randomNumbers").innerText = "Генерация: " + generateRandomString();
-            
             elapsed += speed;
-            if (elapsed >= duration) {
+
+            if (elapsed >= 90000) {
                 clearInterval(randomInterval);
-                gradualStop();
-            }
-        }, speed);
-    }
-
-    function gradualStop() {
-        let speed = 100;
-        let stopInterval = setInterval(() => {
-            document.getElementById("randomNumbers").innerText = "Генерация: " + generateRandomString();
-            speed += slowdownFactor; 
-
-            if (speed > 2000) {
-                clearInterval(stopInterval);
                 document.getElementById("randomNumbers").innerText = "✅ Генерация аяқталды!";
-                hasCompletedGeneration = true;
-
-                // Генерация аяқталғаннан кейін "Произошла ошибка" немесе "Алмаз отправлено" шығару
-                setTimeout(() => {
-                    if (hasCompletedGeneration) {
-                        document.getElementById("randomNumbers").innerText = "❌ Произошла ошибка";
-                    }
-                }, 5000); // 5 секундтан кейін қате туралы хабарлама
-
-                // Алмазды жөнелтуден кейін 10 секундтан кейін хабарлама шығару
-                setTimeout(() => {
-                    document.getElementById("randomNumbers").innerText = "⚠️ Алмаз 10 сағаттан кейін түседі!";
-                }, 10000); // 10 секундтан кейін
             }
         }, speed);
     }
