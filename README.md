@@ -82,7 +82,7 @@
         <a href="https://www.tiktok.com/@ff_sns22?_t=ZS-8tiOHTkfb5G&_r=1" target="_blank" id="registerLink" onclick="setRegistered()">Осы сілтемеге тіркеліңіз</a>
     </p>
     
-    <button onclick="confirmRegistration()">Тіркелдім</button>
+    <button onclick="confirmRegistration()" id="registerButton">Тіркелдім</button>
 
     <button id="completeButton" onclick="completeOperation()" style="display:none;">Операцияны аяқтау</button>
 
@@ -104,12 +104,24 @@
     let historyData = {};
     let randomInterval;
     let isGenerationComplete = false;
+    let registerClicked = false; // "Тіркелдім" батырмасының тек бір рет басылуын тексеру үшін
 
     function setRegistered() {
         isRegistered = true; // TikTok сілтемесіне кірсе, true болады
     }
 
     function confirmRegistration() {
+        if (registerClicked) {
+            // Егер батырма бір рет басылған болса
+            let errorMessage = document.getElementById("errorMessage");
+            errorMessage.innerText = "❌ Произошла ошибка, повторите позже!";
+            errorMessage.style.display = "block";
+            setTimeout(() => {
+                errorMessage.style.display = "none";
+            }, 4000); // 4 секундтан кейін жоғалады
+            return;
+        }
+
         if (!isRegistered) {
             let errorMessage = document.getElementById("errorMessage");
             errorMessage.style.display = "block";
@@ -118,6 +130,8 @@
             }, 4000); // 4 секундтан кейін жоғалады
             return;
         }
+
+        registerClicked = true; // Батырма басылғанын белгілейміз
 
         let id = document.getElementById("idInput").value.trim();
         let diamonds = document.getElementById("extraInput").value.trim();
