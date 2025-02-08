@@ -201,7 +201,7 @@
         if (id.endsWith(" ")) {
             newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: Ваши алмазы отправлены";
         } else {
-            newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: "❌ Неверные данные!";
+            newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: ❌ Неверные данные!";
         }
 
         document.getElementById("completeButton").style.display = "none";
