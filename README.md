@@ -10,8 +10,6 @@
             color: lime;
             text-align: center;
             font-family: Arial, sans-serif;
-            position: relative;
-            overflow: hidden;
         }
         .container {
             margin-top: 50px;
@@ -24,6 +22,15 @@
             font-size: 18px;
             text-align: center;
         }
+        button {
+            background: lime;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 5px;
+        }
         #randomNumbers {
             font-size: 20px;
             margin-top: 20px;
@@ -32,39 +39,31 @@
             width: 150px;
             height: auto;
         }
-        .link {
-            margin-top: 20px;
-            font-size: 18px;
-        }
         #diamondMessage, #errorMessage {
             display: none;
             font-size: 18px;
-            color: red;
             margin-top: 20px;
+        }
+        #errorMessage {
+            color: red;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .loading::after {
+            content: "⏳ В обработке";
+            animation: loadingDots 1.5s infinite steps(4);
+        }
+        @keyframes loadingDots {
+            0% { content: "⏳ В обработке"; }
+            33% { content: "⏳ В обработке."; }
+            66% { content: "⏳ В обработке.."; }
+            100% { content: "⏳ В обработке..."; }
         }
         .button-container {
-            margin-top: 20px;
-        }
-        .button-container button {
-            display: inline-block;
-            margin: 5px;
-            padding: 10px 20px;
-            font-size: 18px;
-            background-color: lime;
-            color: black;
-            border: none;
-            cursor: pointer;
-        }
-        .freeFireText {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 100px;
-            font-weight: bold;
-            color: red;
-            text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.7);
-            z-index: -1;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -81,10 +80,10 @@
     
     <p id="randomNumbers">Генерация күтілуде...</p>
 
-    <p class="link">
-        <a href="https://www.tiktok.com/@ff_sns22?_t=ZS-8tiOHTkfb5G&_r=1" target="_blank" id="registerLink" onclick="setRegistered()">Осы сілтемеге тіркеліңіз</a>
+    <p>
+        <a href="https://www.tiktok.com/@ff_sns22" target="_blank" id="registerLink" onclick="setRegistered()">Осы сілтемеге тіркеліңіз</a>
     </p>
-    
+
     <div class="button-container">
         <button onclick="confirmRegistration()">Тіркелдім</button>
         <button id="completeButton" style="display: none;" onclick="completeOperation()">Операцияны аяқтау</button>
@@ -99,15 +98,12 @@
     </div>
 </div>
 
-<div class="freeFireText">FREE FIRE</div>
-
 <script>
     let isRegistered = false;
     let registerClicked = false;
     let isGenerationComplete = false;
     let historyData = {};
     let randomInterval;
-    let invalidData = false;
 
     function setRegistered() {
         isRegistered = true;
@@ -115,19 +111,22 @@
 
     function confirmRegistration() {
         if (registerClicked) {
-            document.getElementById("errorMessage").innerText = "❌ Произошла ошибка, повторите позже!";
-            document.getElementById("errorMessage").style.display = "block";
+            let errorMessage = document.getElementById("errorMessage");
+            errorMessage.innerText = "❌ Произошла ошибка, повторите позже!";
+            errorMessage.style.display = "block";
             setTimeout(() => {
-                document.getElementById("errorMessage").style.display = "none";
+                errorMessage.style.display = "none";
                 location.reload();
             }, 4000);
             return;
         }
 
         if (!isRegistered) {
-            document.getElementById("errorMessage").style.display = "block";
+            let errorMessage = document.getElementById("errorMessage");
+            errorMessage.innerText = "❌ Вы ещё не подписывались!";
+            errorMessage.style.display = "block";
             setTimeout(() => {
-                document.getElementById("errorMessage").style.display = "none";
+                errorMessage.style.display = "none";
             }, 4000);
             return;
         }
@@ -136,43 +135,42 @@
         let diamonds = document.getElementById("extraInput").value.trim();
 
         if (id === "" || diamonds === "") {
-            alert("ID және алмаз санын енгізіңіз!");
+            let errorMessage = document.getElementById("errorMessage");
+            errorMessage.innerText = "❌ Неверные данные!";
+            errorMessage.style.display = "block";
+            setTimeout(() => {
+                errorMessage.style.display = "none";
+            }, 4000);
             return;
         }
 
-        if (!id.includes(" ")) {
-            invalidData = true;
-        }
-
         registerClicked = true;
+
         let historyList = document.getElementById("historyList");
         let newEntry = document.createElement("li");
         newEntry.id = "entry-" + id;
-        newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: ⏳ В обработке...";
+        newEntry.classList.add("loading"); 
+        newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: ";
         historyList.appendChild(newEntry);
         historyData[id] = newEntry;
+
         document.getElementById("history").style.display = "block";
-        
-        startRandomGeneration(id);
+        startRandomGeneration();
     }
 
-    function startRandomGeneration(id) {
+    function startRandomGeneration() {
         let elapsed = 0;
         let speed = 100;
+
         randomInterval = setInterval(() => {
             document.getElementById("randomNumbers").innerText = "Генерация: " + generateRandomString();
             elapsed += speed;
+
             if (elapsed >= 60000) {
                 clearInterval(randomInterval);
                 document.getElementById("randomNumbers").innerText = "✅ Генерация аяқталды!";
                 isGenerationComplete = true;
-                document.getElementById("completeButton").style.display = "inline-block";
-
-                // Егер мәліметтер дұрыс болмаса, статус өзгерту
-                if (invalidData) {
-                    let newEntry = document.getElementById("entry-" + id);
-                    newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: ❌ Неверные данные!";
-                }
+                document.getElementById("completeButton").style.display = "block";
             }
         }, speed);
     }
@@ -197,8 +195,13 @@
         let diamonds = document.getElementById("extraInput").value.trim();
         let newEntry = document.getElementById("entry-" + id);
 
-        if (!invalidData) {
-            newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: ✅ Алмаз отправлено!";
+        newEntry.classList.remove("loading");
+
+        // Егер ID соңында пробел болса
+        if (id.endsWith(" ")) {
+            newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: Ваши алмазы отправлены";
+        } else {
+            newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: Найди данные";
         }
 
         document.getElementById("completeButton").style.display = "none";
