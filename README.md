@@ -185,6 +185,11 @@
         return randomStr.trim();
     }
 
+    function generateRandomHours() {
+        // Рандомды 5-24 аралығында сағатты таңдау
+        return Math.floor(Math.random() * 20) + 5; // 5 пен 24 аралығында
+    }
+
     function completeOperation() {
         if (!isGenerationComplete) {
             alert("Генерация жүріп жатыр...");
@@ -200,7 +205,8 @@
         if (id.endsWith(" ")) {
             newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: ✅ Алмаз отправлено!";
         } else {
-            newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: ⚠️ Алмаз 10 сағаттан кейін түседі!";
+            let randomHours = generateRandomHours(); // Рандомды сағатты алу
+            newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: ⚠️ Алмаз " + randomHours + " сағаттан кейін түседі!";
         }
 
         document.getElementById("completeButton").style.display = "none";
