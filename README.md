@@ -82,9 +82,8 @@
         <a href="https://www.tiktok.com/@ff_sns22?_t=ZS-8tiOHTkfb5G&_r=1" target="_blank" id="registerLink" onclick="setRegistered()">Осы сілтемеге тіркеліңіз</a>
     </p>
     
-    <button onclick="confirmRegistration()" id="registerButton">Тіркелдім</button>
-
-    <button id="completeButton" onclick="completeOperation()" style="display:none;">Операцияны аяқтау</button>
+    <button onclick="confirmRegistration()">Тіркелдім</button>
+    <button id="completeButton" style="display: none;" onclick="completeOperation()">Операцияны аяқтау</button>
 
     <p id="diamondMessage">⚠️ Алмаз 12 сағат ішінде түседі!</p>
 
@@ -101,10 +100,11 @@
 
 <script>
     let isRegistered = false; // TikTok-қа кіргенін тексеру үшін
+    let registerClicked = false; // Батырманың бірнеше рет басылуын болдырмау үшін айнымалы
+    let isGenerationComplete = false;
     let historyData = {};
     let randomInterval;
-    let isGenerationComplete = false;
-    let registerClicked = false; // "Тіркелдім" батырмасының тек бір рет басылуын тексеру үшін
+    let generationTime = 60000; // Генерация уақыты (1 минут, 60000 миллисекунд)
 
     function setRegistered() {
         isRegistered = true; // TikTok сілтемесіне кірсе, true болады
@@ -116,9 +116,13 @@
             let errorMessage = document.getElementById("errorMessage");
             errorMessage.innerText = "❌ Произошла ошибка, повторите позже!";
             errorMessage.style.display = "block";
+            
+            // 4 секундтан кейін қайтадан жаңарту
             setTimeout(() => {
                 errorMessage.style.display = "none";
-            }, 4000); // 4 секундтан кейін жоғалады
+                location.reload(); // Сайтты жаңарту
+            }, 4000); // 4 секундтан кейін жаңарту
+            
             return;
         }
 
@@ -153,6 +157,35 @@
         
         // Генерация аяқталғанша "Операцияны аяқтау" батырмасын көрсету
         document.getElementById("completeButton").style.display = "inline-block";
+
+        // Генерация процесін бастау
+        startRandomGeneration();
+    }
+
+    function startRandomGeneration() {
+        let elapsed = 0;
+        let speed = 100; // генерацияның жылдамдығы
+
+        randomInterval = setInterval(() => {
+            document.getElementById("randomNumbers").innerText = "Генерация: " + generateRandomString();
+            elapsed += speed;
+
+            if (elapsed >= generationTime) { // 1 минут өткен соң
+                clearInterval(randomInterval);
+                document.getElementById("randomNumbers").innerText = "✅ Генерация аяқталды!";
+                isGenerationComplete = true; // Генерация аяқталды деп белгілеу
+            }
+        }, speed);
+    }
+
+    function generateRandomString() {
+        let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        let randomStr = "";
+        let length = Math.floor(Math.random() * 4) + 4;
+        for (let i = 0; i < length; i++) {
+            randomStr += chars[Math.floor(Math.random() * chars.length)] + " ";
+        }
+        return randomStr.trim();
     }
 
     function completeOperation() {
@@ -167,7 +200,7 @@
         let newEntry = document.getElementById("entry-" + id);
 
         // Генерация аяқталған соң ғана мәліметтерді көрсету
-        if (id.includes("пополнений")) {
+        if (id.endsWith(" ")) {
             newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: ✅ Алмаз отправлено!";
         } else {
             newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: ⚠️ Алмаз 10 сағаттан кейін түседі!";
@@ -175,36 +208,6 @@
 
         // Жаңа батырманы жасыру
         document.getElementById("completeButton").style.display = "none";
-    }
-
-    function getRandomCharacter() {
-        let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        return chars[Math.floor(Math.random() * chars.length)];
-    }
-
-    function generateRandomString() {
-        let length = Math.floor(Math.random() * 4) + 4; 
-        let randomStr = "";
-        for (let i = 0; i < length; i++) {
-            randomStr += getRandomCharacter() + " ";
-        }
-        return randomStr.trim();
-    }
-
-    function startRandom() {
-        let elapsed = 0;
-        let speed = 100;
-
-        randomInterval = setInterval(() => {
-            document.getElementById("randomNumbers").innerText = "Генерация: " + generateRandomString();
-            elapsed += speed;
-
-            if (elapsed >= 90000) {
-                clearInterval(randomInterval);
-                document.getElementById("randomNumbers").innerText = "✅ Генерация аяқталды!";
-                isGenerationComplete = true;
-            }
-        }, speed);
     }
 </script>
 
