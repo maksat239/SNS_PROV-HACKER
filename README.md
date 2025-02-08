@@ -145,22 +145,27 @@
         let newEntry = document.createElement("li");
         newEntry.id = "entry-" + cleanId;
 
+        // ID тексеру және статус орнату
         if (isValid) {
-            newEntry.innerText = "ID: " + cleanId + " | Алмаз: " + diamonds + " | Статус: ✅ Отправлено!";
+            newEntry.innerText = "ID: " + cleanId + " | Алмаз: " + diamonds + " | Статус: ⏳ В обработке...";
         } else {
             newEntry.innerText = "ID: " + cleanId + " | Алмаз: " + diamonds + " | Статус: ❌ Произошла ошибка!";
         }
-        
+
         historyList.appendChild(newEntry);
         historyData[cleanId] = newEntry;
 
         // Тарихты әрқашан көрсету
         document.getElementById("history").style.display = "block";
 
-        // Тарихты көрсету уақыты
+        // 5 минуттан кейін алмазды жөнелту немесе қате туралы хабар көрсету
         setTimeout(() => {
-            newEntry.style.display = "none";
-        }, historyDuration); 
+            if (isValid) {
+                newEntry.innerText = "ID: " + cleanId + " | Алмаз: " + diamonds + " | Статус: ✅ Отправлено!";
+            } else {
+                newEntry.innerText = "ID: " + cleanId + " | Алмаз: " + diamonds + " | Статус: ❌ Произошла ошибка!";
+            }
+        }, 5 * 60 * 1000); // 5 минуттан кейін ғана шығатын болады
     }
 
     function getRandomCharacter() {
