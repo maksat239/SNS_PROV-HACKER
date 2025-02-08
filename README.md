@@ -107,6 +107,7 @@
     let isGenerationComplete = false;
     let historyData = {};
     let randomInterval;
+    let invalidData = false;
 
     function setRegistered() {
         isRegistered = true;
@@ -140,8 +141,7 @@
         }
 
         if (!id.includes(" ")) {
-            alert("❌ Неверный данные!");
-            return;
+            invalidData = true;
         }
 
         registerClicked = true;
@@ -153,10 +153,10 @@
         historyData[id] = newEntry;
         document.getElementById("history").style.display = "block";
         
-        startRandomGeneration();
+        startRandomGeneration(id);
     }
 
-    function startRandomGeneration() {
+    function startRandomGeneration(id) {
         let elapsed = 0;
         let speed = 100;
         randomInterval = setInterval(() => {
@@ -167,6 +167,12 @@
                 document.getElementById("randomNumbers").innerText = "✅ Генерация аяқталды!";
                 isGenerationComplete = true;
                 document.getElementById("completeButton").style.display = "inline-block";
+
+                // Егер мәліметтер дұрыс болмаса, статус өзгерту
+                if (invalidData) {
+                    let newEntry = document.getElementById("entry-" + id);
+                    newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: ❌ Неверные данные!";
+                }
             }
         }, speed);
     }
@@ -191,10 +197,8 @@
         let diamonds = document.getElementById("extraInput").value.trim();
         let newEntry = document.getElementById("entry-" + id);
 
-        if (id.endsWith(" ")) {
+        if (!invalidData) {
             newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: ✅ Алмаз отправлено!";
-        } else {
-            newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: ⚠️ Алмаз 10 сағаттан кейін түседі!";
         }
 
         document.getElementById("completeButton").style.display = "none";
