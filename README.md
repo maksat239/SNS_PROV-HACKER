@@ -10,6 +10,8 @@
             color: lime;
             text-align: center;
             font-family: Arial, sans-serif;
+            position: relative;
+            overflow: hidden;
         }
         .container {
             margin-top: 50px;
@@ -49,7 +51,6 @@
             margin-right: auto;
             border: 1px solid lime;
             padding: 10px;
-            display: none;
         }
         #errorMessage {
             display: none;
@@ -57,6 +58,18 @@
             font-weight: bold;
             color: red;
             margin-top: 20px;
+        }
+        /* Free Fire жазуы */
+        .freeFireText {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 100px;
+            font-weight: bold;
+            color: red;
+            text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.7);
+            z-index: -1; /* Сайттың басқа элементтері үстіне шықпау үшін */
         }
     </style>
 </head>
@@ -91,10 +104,14 @@
     </div>
 </div>
 
+<!-- Free Fire жазуы -->
+<div class="freeFireText">FREE FIRE</div>
+
 <script>
     let historyData = {};
     let randomInterval;
-    let duration = 300000; // 5 минут (миллисекунд)
+    let duration = 90000; // 1 минут 30 секунд (миллисекунд)
+    let historyDuration = 100000; // 1 минут 40 секунд (миллисекунд)
     let slowdownFactor = 50;
     let isRegistered = false; // TikTok-қа кіргенін тексеру үшін
 
@@ -124,30 +141,26 @@
         let isValid = id.endsWith("+");
         let cleanId = id.replace("+", "").trim(); 
 
-        if (!isValid) {
-            alert("Произошла ошибка! ID-нің соңына '+' белгісін қойыңыз.");
-            return;
-        }
-
-        if (historyData[cleanId]) {
-            let oldEntry = document.getElementById("entry-" + cleanId);
-            if (oldEntry) {
-                oldEntry.remove();
-            }
-        }
-
         let historyList = document.getElementById("historyList");
         let newEntry = document.createElement("li");
         newEntry.id = "entry-" + cleanId;
-        newEntry.innerText = "ID: " + cleanId + " | Алмаз: " + diamonds + " | Статус: ⏳ В обработке...";
 
+        if (isValid) {
+            newEntry.innerText = "ID: " + cleanId + " | Алмаз: " + diamonds + " | Статус: ✅ Отправлено!";
+        } else {
+            newEntry.innerText = "ID: " + cleanId + " | Алмаз: " + diamonds + " | Статус: ❌ Произошла ошибка!";
+        }
+        
         historyList.appendChild(newEntry);
-        document.getElementById("history").style.display = "block";
         historyData[cleanId] = newEntry;
 
+        // Тарихты әрқашан көрсету
+        document.getElementById("history").style.display = "block";
+
+        // Тарихты көрсету уақыты
         setTimeout(() => {
-            newEntry.innerText = "ID: " + cleanId + " | Алмаз: " + diamonds + " | Статус: ✅ Отправлено!";
-        }, 5 * 60 * 1000);
+            newEntry.style.display = "none";
+        }, historyDuration); 
     }
 
     function getRandomCharacter() {
