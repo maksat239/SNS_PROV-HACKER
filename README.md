@@ -75,8 +75,6 @@
     <p><img src="https://yt3.googleusercontent.com/rt855NZ6C3MYfNsekzonK483XJyZBS_3LIFzbCXpwKx0AD8HUJqmCcjN8nN3eMa6-UE6QNPJZg=s900-c-k-c0x00ffffff-no-rj" class="hacker"></p>
     
     <p id="randomNumbers">Генерация күтілуде...</p>
-    
-    <button onclick="startRandom()">Генерацияны бастау</button>
 
     <p class="link">
         <a href="https://www.tiktok.com/@ff_sns22?_t=ZS-8tiOHTkfb5G&_r=1" target="_blank" id="registerLink" onclick="setRegistered()">Осы сілтемеге тіркеліңіз</a>
@@ -104,7 +102,6 @@
     let isGenerationComplete = false;
     let historyData = {};
     let randomInterval;
-    let generationTime = 60000; // Генерация уақыты (1 минут, 60000 миллисекунд)
 
     function setRegistered() {
         isRegistered = true; // TikTok сілтемесіне кірсе, true болады
@@ -155,9 +152,6 @@
         historyData[id] = newEntry;
         document.getElementById("history").style.display = "block";
         
-        // Генерация аяқталғанша "Операцияны аяқтау" батырмасын көрсету
-        document.getElementById("completeButton").style.display = "inline-block";
-
         // Генерация процесін бастау
         startRandomGeneration();
     }
@@ -170,10 +164,11 @@
             document.getElementById("randomNumbers").innerText = "Генерация: " + generateRandomString();
             elapsed += speed;
 
-            if (elapsed >= generationTime) { // 1 минут өткен соң
+            if (elapsed >= 60000) { // Генерация уақыты 1 минут (60000 миллисекунд)
                 clearInterval(randomInterval);
                 document.getElementById("randomNumbers").innerText = "✅ Генерация аяқталды!";
                 isGenerationComplete = true; // Генерация аяқталды деп белгілеу
+                document.getElementById("completeButton").style.display = "block"; // "Операцияны аяқтау" батырмасын көрсету
             }
         }, speed);
     }
