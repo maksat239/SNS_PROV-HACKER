@@ -57,6 +57,12 @@
             text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.7);
             z-index: -1;
         }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -75,9 +81,11 @@
     <p class="link">
         <a href="https://www.tiktok.com/@ff_sns22?_t=ZS-8tiOHTkfb5G&_r=1" target="_blank" id="registerLink" onclick="setRegistered()">Осы сілтемеге тіркеліңіз</a>
     </p>
-    
-    <button onclick="confirmRegistration()">Тіркелдім</button>
-    <button id="completeButton" style="display: none; margin-top: 10px;" onclick="completeOperation()">Операцияны аяқтау</button>
+
+    <div class="button-container">
+        <button onclick="confirmRegistration()">Тіркелдім</button>
+        <button id="completeButton" style="display: none;" onclick="completeOperation()">Операцияны аяқтау</button>
+    </div>
 
     <p id="diamondMessage">⚠️ Алмаз 12 сағат ішінде түседі!</p>
     <p id="errorMessage">❌ Вы ещё не подписывались!</p>
