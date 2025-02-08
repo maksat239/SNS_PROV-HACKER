@@ -191,14 +191,13 @@
             return;
         }
 
-        let id = document.getElementById("idInput").value.trim();
+        let id = document.getElementById("idInput").value;
         let diamonds = document.getElementById("extraInput").value.trim();
-        let newEntry = document.getElementById("entry-" + id);
+        let newEntry = document.getElementById("entry-" + id.trim());
 
         newEntry.classList.remove("loading");
 
-        // Егер ID соңында пробел болса
-        if (id.endsWith(" ")) {
+        if (id.trimEnd() !== id) {
             newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: Ваши алмазы отправлены";
         } else {
             newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: ❌ Неверные данные!";
