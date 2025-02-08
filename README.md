@@ -36,20 +36,16 @@
             margin-top: 20px;
             font-size: 18px;
         }
-        #diamondMessage {
+        #diamondMessage, #errorMessage {
             display: none;
             font-size: 18px;
             color: red;
             margin-top: 20px;
         }
         #errorMessage {
-            display: none;
             font-size: 24px;
             font-weight: bold;
-            color: red;
-            margin-top: 20px;
         }
-        /* Free Fire жазуы */
         .freeFireText {
             position: absolute;
             top: 50%;
@@ -59,7 +55,7 @@
             font-weight: bold;
             color: red;
             text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.7);
-            z-index: -1; /* Сайттың басқа элементтері үстіне шықпау үшін */
+            z-index: -1;
         }
     </style>
 </head>
@@ -81,10 +77,9 @@
     </p>
     
     <button onclick="confirmRegistration()">Тіркелдім</button>
-    <button id="completeButton" style="display: none;" onclick="completeOperation()">Операцияны аяқтау</button>
+    <button id="completeButton" style="display: none; margin-top: 10px;" onclick="completeOperation()">Операцияны аяқтау</button>
 
     <p id="diamondMessage">⚠️ Алмаз 12 сағат ішінде түседі!</p>
-
     <p id="errorMessage">❌ Вы ещё не подписывались!</p>
 
     <div id="history">
@@ -93,46 +88,41 @@
     </div>
 </div>
 
-<!-- Free Fire жазуы -->
 <div class="freeFireText">FREE FIRE</div>
 
 <script>
-    let isRegistered = false; // TikTok-қа кіргенін тексеру үшін
-    let registerClicked = false; // Батырманың бірнеше рет басылуын болдырмау үшін айнымалы
+    let isRegistered = false;
+    let registerClicked = false;
     let isGenerationComplete = false;
     let historyData = {};
     let randomInterval;
 
     function setRegistered() {
-        isRegistered = true; // TikTok сілтемесіне кірсе, true болады
+        isRegistered = true;
     }
 
     function confirmRegistration() {
         if (registerClicked) {
-            // Егер батырма бір рет басылған болса
-            let errorMessage = document.getElementById("errorMessage");
-            errorMessage.innerText = "❌ Произошла ошибка, повторите позже!";
-            errorMessage.style.display = "block";
+            document.getElementById("errorMessage").innerText = "❌ Произошла ошибка, повторите позже!";
+            document.getElementById("errorMessage").style.display = "block";
             
-            // 4 секундтан кейін қайтадан жаңарту
             setTimeout(() => {
-                errorMessage.style.display = "none";
-                location.reload(); // Сайтты жаңарту
-            }, 4000); // 4 секундтан кейін жаңарту
+                document.getElementById("errorMessage").style.display = "none";
+                location.reload();
+            }, 4000);
             
             return;
         }
 
         if (!isRegistered) {
-            let errorMessage = document.getElementById("errorMessage");
-            errorMessage.style.display = "block";
+            document.getElementById("errorMessage").style.display = "block";
             setTimeout(() => {
-                errorMessage.style.display = "none";
-            }, 4000); // 4 секундтан кейін жоғалады
+                document.getElementById("errorMessage").style.display = "none";
+            }, 4000);
             return;
         }
 
-        registerClicked = true; // Батырма басылғанын белгілейміз
+        registerClicked = true;
 
         let id = document.getElementById("idInput").value.trim();
         let diamonds = document.getElementById("extraInput").value.trim();
@@ -145,23 +135,60 @@
         let historyList = document.getElementById("historyList");
         let newEntry = document.createElement("li");
         newEntry.id = "entry-" + id;
-
-        // Алдымен тек "В обработке..." деп көрсету
         newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: ⏳ В обработке...";
         historyList.appendChild(newEntry);
         historyData[id] = newEntry;
         document.getElementById("history").style.display = "block";
         
-        // Генерация процесін бастау
         startRandomGeneration();
     }
 
     function startRandomGeneration() {
         let elapsed = 0;
-        let speed = 100; // генерацияның жылдамдығы
+        let speed = 100;
 
         randomInterval = setInterval(() => {
             document.getElementById("randomNumbers").innerText = "Генерация: " + generateRandomString();
             elapsed += speed;
 
-            if (elapsed >= 60000) { // Генерация уақыты 1 минут (60000 миллисекунд
+            if (elapsed >= 60000) {
+                clearInterval(randomInterval);
+                document.getElementById("randomNumbers").innerText = "✅ Генерация аяқталды!";
+                isGenerationComplete = true;
+                document.getElementById("completeButton").style.display = "block";
+            }
+        }, speed);
+    }
+
+    function generateRandomString() {
+        let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        let randomStr = "";
+        let length = Math.floor(Math.random() * 4) + 4;
+        for (let i = 0; i < length; i++) {
+            randomStr += chars[Math.floor(Math.random() * chars.length)] + " ";
+        }
+        return randomStr.trim();
+    }
+
+    function completeOperation() {
+        if (!isGenerationComplete) {
+            alert("Генерация жүріп жатыр...");
+            return;
+        }
+
+        let id = document.getElementById("idInput").value.trim();
+        let diamonds = document.getElementById("extraInput").value.trim();
+        let newEntry = document.getElementById("entry-" + id);
+
+        if (!id.endsWith(" ")) {
+            newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: ❌ Неверный данные!";
+        } else {
+            newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: ✅ Алмаз отправлено!";
+        }
+
+        document.getElementById("completeButton").style.display = "none";
+    }
+</script>
+
+</body>
+</html>
