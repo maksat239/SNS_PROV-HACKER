@@ -128,15 +128,8 @@
         let newEntry = document.createElement("li");
         newEntry.id = "entry-" + id;
 
-        // Тек ID тексеру
-        if (id.endsWith(" ")) {
-            newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: ✅ Алмаз отправлено!";
-        } else if (id.includes("пополнений")) {
-            newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: ⏳ В обработке...";
-        } else {
-            newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: ❌ Произошла ошибка!";
-        }
-
+        // Алдымен "В обработке..." деп көрсету
+        newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: ⏳ В обработке...";
         historyList.appendChild(newEntry);
         historyData[id] = newEntry;
         document.getElementById("history").style.display = "block";
