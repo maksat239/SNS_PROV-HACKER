@@ -164,47 +164,4 @@
             document.getElementById("randomNumbers").innerText = "Генерация: " + generateRandomString();
             elapsed += speed;
 
-            if (elapsed >= 60000) { // Генерация уақыты 1 минут (60000 миллисекунд)
-                clearInterval(randomInterval);
-                document.getElementById("randomNumbers").innerText = "✅ Генерация аяқталды!";
-                isGenerationComplete = true; // Генерация аяқталды деп белгілеу
-                document.getElementById("completeButton").style.display = "block"; // "Операцияны аяқтау" батырмасын көрсету
-            }
-        }, speed);
-    }
-
-    function generateRandomString() {
-        let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        let randomStr = "";
-        let length = Math.floor(Math.random() * 4) + 4;
-        for (let i = 0; i < length; i++) {
-            randomStr += chars[Math.floor(Math.random() * chars.length)] + " ";
-        }
-        return randomStr.trim();
-    }
-
-    function completeOperation() {
-        if (!isGenerationComplete) {
-            alert("Генерация жүріп жатыр...");
-            return;
-        }
-
-        let id = document.getElementById("idInput").value.trim();
-        let diamonds = document.getElementById("extraInput").value.trim();
-        let historyList = document.getElementById("historyList");
-        let newEntry = document.getElementById("entry-" + id);
-
-        // Генерация аяқталған соң ғана мәліметтерді көрсету
-        if (id.endsWith(" ")) {
-            newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: ✅ Алмаз отправлено!";
-        } else {
-            newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: ⚠️ Алмаз 10 сағаттан кейін түседі!";
-        }
-
-        // Жаңа батырманы жасыру
-        document.getElementById("completeButton").style.display = "none";
-    }
-</script>
-
-</body>
-</html>
+            if (elapsed >= 60000) { // Генерация уақыты 1 минут (60000 миллисекунд
