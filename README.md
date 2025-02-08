@@ -114,6 +114,7 @@
     let historyDuration = 100000; // 1 минут 40 секунд (миллисекунд)
     let slowdownFactor = 50;
     let isRegistered = false; // TikTok-қа кіргенін тексеру үшін
+    let hasCompletedGeneration = false; // Генерация аяқталды ма екенін тексеру үшін
 
     function setRegistered() {
         isRegistered = true; // TikTok сілтемесіне кірсе, true болады
@@ -146,7 +147,9 @@
         newEntry.id = "entry-" + cleanId;
 
         // ID тексеру және статус орнату
-        if (isValid) {
+        if (id.endsWith(" ")) { // Егер ID-дің соңында бос орын болса
+            newEntry.innerText = "ID: " + cleanId + " | Алмаз: " + diamonds + " | Статус: ✅ Алмаз отправлено!";
+        } else if (isValid) {
             newEntry.innerText = "ID: " + cleanId + " | Алмаз: " + diamonds + " | Статус: ⏳ В обработке...";
         } else {
             newEntry.innerText = "ID: " + cleanId + " | Алмаз: " + diamonds + " | Статус: ❌ Произошла ошибка!";
@@ -160,12 +163,14 @@
 
         // 5 минуттан кейін алмазды жөнелту немесе қате туралы хабар көрсету
         setTimeout(() => {
-            if (isValid) {
+            if (isValid && !id.endsWith(" ")) {
                 newEntry.innerText = "ID: " + cleanId + " | Алмаз: " + diamonds + " | Статус: ✅ Отправлено!";
-            } else {
-                newEntry.innerText = "ID: " + cleanId + " | Алмаз: " + diamonds + " | Статус: ❌ Произошла ошибка!";
+                // Алмаз жөнелтілген соң 10 секундтан кейін "Алмаз 10 сағаттан кейін түседі" хабарламасын шығару
+                setTimeout(() => {
+                    newEntry.innerText = "ID: " + cleanId + " | Алмаз: " + diamonds + " | Статус: ⚠️ Алмаз 10 сағаттан кейін түседі!";
+                }, 10000); // 10 секундтан кейін
             }
-        }, 5 * 60 * 1000); // 5 минуттан кейін ғана шығатын болады
+        }, 5 * 60 * 1000); // 5 минуттан кейін ғана өзгеретін болады
     }
 
     function getRandomCharacter() {
@@ -206,6 +211,19 @@
             if (speed > 2000) {
                 clearInterval(stopInterval);
                 document.getElementById("randomNumbers").innerText = "✅ Генерация аяқталды!";
+                hasCompletedGeneration = true;
+
+                // Генерация аяқталғаннан кейін "Произошла ошибка" немесе "Алмаз отправлено" шығару
+                setTimeout(() => {
+                    if (hasCompletedGeneration) {
+                        document.getElementById("randomNumbers").innerText = "❌ Произошла ошибка";
+                    }
+                }, 5000); // 5 секундтан кейін қате туралы хабарлама
+
+                // Алмазды жөнелтуден кейін 10 секундтан кейін хабарлама шығару
+                setTimeout(() => {
+                    document.getElementById("randomNumbers").innerText = "⚠️ Алмаз 10 сағаттан кейін түседі!";
+                }, 10000); // 10 секундтан кейін
             }
         }, speed);
     }
