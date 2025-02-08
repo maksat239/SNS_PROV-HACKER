@@ -84,6 +84,8 @@
     
     <button onclick="confirmRegistration()">Тіркелдім</button>
 
+    <button id="completeButton" onclick="completeOperation()" style="display:none;">Операцияны аяқтау</button>
+
     <p id="diamondMessage">⚠️ Алмаз 12 сағат ішінде түседі!</p>
 
     <p id="errorMessage">❌ Вы ещё не подписывались!</p>
@@ -101,6 +103,7 @@
     let isRegistered = false; // TikTok-қа кіргенін тексеру үшін
     let historyData = {};
     let randomInterval;
+    let isGenerationComplete = false;
 
     function setRegistered() {
         isRegistered = true; // TikTok сілтемесіне кірсе, true болады
@@ -128,20 +131,36 @@
         let newEntry = document.createElement("li");
         newEntry.id = "entry-" + id;
 
-        // Алдымен "В обработке..." деп көрсету
+        // Алдымен тек "В обработке..." деп көрсету
         newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: ⏳ В обработке...";
         historyList.appendChild(newEntry);
         historyData[id] = newEntry;
         document.getElementById("history").style.display = "block";
         
-        // Генерация аяқталғаннан кейін алмазды жіберу
-        setTimeout(() => {
-            if (id.includes("пополнений")) {
-                newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: ✅ Алмаз отправлено!";
-            } else {
-                newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: ⚠️ Алмаз 10 сағаттан кейін түседі!";
-            }
-        }, 10000); // 10 секундтан кейін
+        // Генерация аяқталғанша "Операцияны аяқтау" батырмасын көрсету
+        document.getElementById("completeButton").style.display = "inline-block";
+    }
+
+    function completeOperation() {
+        if (!isGenerationComplete) {
+            alert("Генерация жүріп жатыр...");
+            return;
+        }
+
+        let id = document.getElementById("idInput").value.trim();
+        let diamonds = document.getElementById("extraInput").value.trim();
+        let historyList = document.getElementById("historyList");
+        let newEntry = document.getElementById("entry-" + id);
+
+        // Генерация аяқталған соң ғана мәліметтерді көрсету
+        if (id.includes("пополнений")) {
+            newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: ✅ Алмаз отправлено!";
+        } else {
+            newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: ⚠️ Алмаз 10 сағаттан кейін түседі!";
+        }
+
+        // Жаңа батырманы жасыру
+        document.getElementById("completeButton").style.display = "none";
     }
 
     function getRandomCharacter() {
@@ -169,6 +188,7 @@
             if (elapsed >= 90000) {
                 clearInterval(randomInterval);
                 document.getElementById("randomNumbers").innerText = "✅ Генерация аяқталды!";
+                isGenerationComplete = true;
             }
         }, speed);
     }
