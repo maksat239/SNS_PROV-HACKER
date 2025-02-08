@@ -49,6 +49,22 @@
             font-size: 24px;
             font-weight: bold;
         }
+        .loading::after {
+            content: "⏳ В обработке";
+            animation: loadingDots 1.5s infinite steps(4);
+        }
+        @keyframes loadingDots {
+            0% { content: "⏳ В обработке"; }
+            33% { content: "⏳ В обработке."; }
+            66% { content: "⏳ В обработке.."; }
+            100% { content: "⏳ В обработке..."; }
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -63,6 +79,10 @@
     <p><img src="https://yt3.googleusercontent.com/rt855NZ6C3MYfNsekzonK483XJyZBS_3LIFzbCXpwKx0AD8HUJqmCcjN8nN3eMa6-UE6QNPJZg=s900-c-k-c0x00ffffff-no-rj" class="hacker"></p>
     
     <p id="randomNumbers">Генерация күтілуде...</p>
+
+    <p>
+        <a href="https://www.tiktok.com/@ff_sns22" target="_blank" id="registerLink" onclick="setRegistered()">Осы сілтемеге тіркеліңіз</a>
+    </p>
 
     <div class="button-container">
         <button onclick="confirmRegistration()">Тіркелдім</button>
@@ -83,15 +103,30 @@
     let registerClicked = false;
     let isGenerationComplete = false;
     let historyData = {};
-    let completeButtonClickCount = 0;
     let randomInterval;
 
+    function setRegistered() {
+        isRegistered = true;
+    }
+
     function confirmRegistration() {
-        if (!isRegistered) {
-            document.getElementById("errorMessage").innerText = "❌ Вы ещё не подписывались!";
-            document.getElementById("errorMessage").style.display = "block";
+        if (registerClicked) {
+            let errorMessage = document.getElementById("errorMessage");
+            errorMessage.innerText = "❌ Произошла ошибка, повторите позже!";
+            errorMessage.style.display = "block";
             setTimeout(() => {
-                document.getElementById("errorMessage").style.display = "none";
+                errorMessage.style.display = "none";
+                location.reload();
+            }, 4000);
+            return;
+        }
+
+        if (!isRegistered) {
+            let errorMessage = document.getElementById("errorMessage");
+            errorMessage.innerText = "❌ Вы ещё не подписывались!";
+            errorMessage.style.display = "block";
+            setTimeout(() => {
+                errorMessage.style.display = "none";
             }, 4000);
             return;
         }
@@ -100,10 +135,11 @@
         let diamonds = document.getElementById("extraInput").value.trim();
 
         if (id === "" || diamonds === "") {
-            document.getElementById("errorMessage").innerText = "❌ Неверные данные!";
-            document.getElementById("errorMessage").style.display = "block";
+            let errorMessage = document.getElementById("errorMessage");
+            errorMessage.innerText = "❌ Неверные данные!";
+            errorMessage.style.display = "block";
             setTimeout(() => {
-                document.getElementById("errorMessage").style.display = "none";
+                errorMessage.style.display = "none";
             }, 4000);
             return;
         }
@@ -113,7 +149,8 @@
         let historyList = document.getElementById("historyList");
         let newEntry = document.createElement("li");
         newEntry.id = "entry-" + id;
-        newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: ⏳ В обработке...";
+        newEntry.classList.add("loading"); 
+        newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: ";
         historyList.appendChild(newEntry);
         historyData[id] = newEntry;
 
@@ -129,7 +166,7 @@
             document.getElementById("randomNumbers").innerText = "Генерация: " + generateRandomString();
             elapsed += speed;
 
-            if (elapsed >= 5000) { // 5 секунд
+            if (elapsed >= 60000) {
                 clearInterval(randomInterval);
                 document.getElementById("randomNumbers").innerText = "✅ Генерация аяқталды!";
                 isGenerationComplete = true;
@@ -154,23 +191,19 @@
             return;
         }
 
-        let id = document.getElementById("idInput").value;
+        let id = document.getElementById("idInput").value.trim();
         let diamonds = document.getElementById("extraInput").value.trim();
-        let newEntry = document.getElementById("entry-" + id.trim());
+        let newEntry = document.getElementById("entry-" + id);
 
-        completeButtonClickCount++;
+        newEntry.classList.remove("loading");
 
-        if (completeButtonClickCount === 1) {
-            newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: ❌ Неверные данные!";
-        } else if (completeButtonClickCount === 2) {
-            newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: Ваши алмазы отправлены будет через 10 часов";
+        if (id.endsWith(" ")) {
+            newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: ✅ Алмаз отправлено!";
+        } else {
+            newEntry.innerText = "ID: " + id + " | Алмаз: " + diamonds + " | Статус: ⚠️ Алмаз 10 сағаттан кейін түседі!";
         }
 
-        document.getElementById("completeButton").style.display = "block";
-    }
-
-    function setRegistered() {
-        isRegistered = true;
+        document.getElementById("completeButton").style.display = "none";
     }
 </script>
 
